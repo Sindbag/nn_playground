@@ -1,0 +1,2 @@
+class PGException(Exception):
+    pass

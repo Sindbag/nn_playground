@@ -1,0 +1,7 @@
+epochs: 2
+learning_rate: 0.1
+network:
+  - size: 5
+    activation: relu
+  - size: 5
+    activation: tanh
