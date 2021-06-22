@@ -6,15 +6,17 @@ from sklearn.preprocessing import StandardScaler
 
 
 class NumpyDataset(Dataset):
-    def __init__(self, X, y):
-        self.X_train = X
-        self.y_train = y
+    def __init__(self, x: np.ndarray, y: np.ndarray):
+        self.x: np.ndarray = x
+        self.y: np.ndarray = y
         sc = StandardScaler()
-        self.X_train = sc.fit_transform(self.X_train)
-        self.X_train, self.y_train = self.X_train.astype(np.float32), self.y_train.astype(np.long)
+        self.x = sc.fit_transform(self.x)
+        self.x, self.y = self.x.astype(np.float32), self.y.astype(np.long)
 
     def __len__(self):
-        return len(self.y_train)
+        return len(self.y)
 
     def __getitem__(self, idx):
-        return torch.from_numpy(self.X_train[idx]), torch.tensor(self.y_train[idx], dtype=torch.long)
+        x = torch.from_numpy(self.x[idx])
+        y = torch.tensor(self.y[idx], dtype=torch.long)
+        return x, y

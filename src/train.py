@@ -33,17 +33,17 @@ class Trainer:
                 loss.backward()
                 self.optimizer.step()
 
-                if epoch:
-                    train_dataset = train_dataloader.dataset
-                    x_train, x_test, y_train, y_test = get_data_from_datasets(train_dataset, train_dataset)
+                # plot
+                train_dataset = train_dataloader.dataset
+                x_train, x_test, y_train, y_test = get_data_from_datasets(train_dataset, train_dataset)
 
-                    xx, yy = make_grid(x_train, x_test, y_train, y_test)
-                    Z = predict_proba_on_mesh_tensor(self, xx, yy)
+                xx, yy = make_grid(x_train, x_test, y_train, y_test)
+                Z = predict_proba_on_mesh_tensor(self, xx, yy)
 
-                    title = "frames_{}/frame_{}.png".format(name, epoch)
-                    plot_predictions(xx, yy, Z, x_train=x_train, x_test=x_test,
-                                     y_train=y_train, y_test=y_test,
-                                     title=title, plot_name=title)
+                title = "frames_{}/frame_{}.png".format(name, epoch)
+                plot_predictions(xx, yy, Z, x_train=x_train, x_test=x_test,
+                                 y_train=y_train, y_test=y_test,
+                                 title=title, plot_name=title)
 
     def calc_accuracy(self, test_dataloader):
         with torch.no_grad():
@@ -97,11 +97,11 @@ class Trainer:
 
 
 def get_data_from_datasets(train_dataset, test_dataset):
-    x_train = train_dataset.x_train.astype(np.float32)
-    x_test = test_dataset.x_train.astype(np.float32)
+    x_train = train_dataset.x.astype(np.float32)
+    y_train = train_dataset.y.astype(int)
 
-    y_train = train_dataset.y_train.astype(int)
-    y_test = test_dataset.y_train.astype(int)
+    x_test = test_dataset.x.astype(np.float32)
+    y_test = test_dataset.y.astype(int)
 
     return x_train, x_test, y_train, y_test
 
@@ -113,12 +113,13 @@ def predict_proba_on_mesh_tensor(clf, xx, yy):
     return Z
 
 
-def train(config: str, dataset: str):
+def train(config: str, dataset_name: str):
     with open(config, 'r') as f:
         params = yaml.load(f)
         
-    dataset = pd.read_csv(dataset)
-    x_train, x_test, y_train, y_test = train_test_split(dataset.x, dataset.y, test_size=0.10, random_state=42)
+    dataset = pd.read_csv(dataset_name, header=0)
+    x = dataset[['X1', 'X2']].values
+    x_train, x_test, y_train, y_test = train_test_split(x, dataset.y.values, test_size=0.10, random_state=42)
     train_dataset = NumpyDataset(x_train, y_train)
     test_dataset = NumpyDataset(x_test, y_test)
 
@@ -133,5 +134,5 @@ def train(config: str, dataset: str):
     optimizer = torch.optim.SGD(model.parameters(), lr=learnig_rate)
     
     trainer = Trainer(num_epochs, learnig_rate, model, criterion, optimizer)
-    trainer.train(dataset, train_dataloader)
+    trainer.train(dataset_name, train_dataloader)
     trainer.calc_accuracy(test_dataloader)

@@ -29,5 +29,8 @@ def datagen(name: str, data_type: Literal["moons", "circles", "blobs"], n_sample
     if x is None or y is None:
         raise PGException('Unknown data type')
 
-    data = pd.DataFrame({"X": x, "y": y})
+    data = pd.DataFrame()
+    data['X1'] = x[:, 0]
+    data['X2'] = x[:, 1]
+    data['y'] = y
     data.to_csv(name)

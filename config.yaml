@@ -1,4 +1,4 @@
-epochs: 2
+epochs: 6
 learning_rate: 0.1
 network:
   - size: 5

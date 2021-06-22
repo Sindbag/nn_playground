@@ -5,10 +5,10 @@ from matplotlib.colors import ListedColormap
 
 def make_grid(x_train, x_test, y_train, y_test, h=.02):
     x_min = min(x_train[:, 0].min(), x_test[:, 0].min()) - .5
-    y_min = min(y_train[:, 1].min(), y_test[:, 1].min()) - .5
+    y_min = min(y_train.min(), y_test.min()) - .5
 
     x_max = max(x_train[:, 0].max(), x_test[:, 0].max()) + .5
-    y_max = max(y_train[:, 1].max(), y_test[:, 1].max()) + .5
+    y_max = max(y_train.max(), y_test.max()) + .5
 
     xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
                          np.arange(y_min, y_max, h))
